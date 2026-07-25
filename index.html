@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Morning Brief — Build Your Edition</title>
+<style>
+  :root {
+    --g700:#0E3E1B; --g500:#197A56; --g400:#21BF61; --g300:#A8F0B8; --g200:#DCF9E3;
+    --neutral:#F1EEEA; --white:#FFFFFF;
+    --gray700:#323232; --gray500:#535353; --gray400:#B1B1B1; --gray300:#D4D4D4;
+    --font:'BCG Henderson Sans','Trebuchet MS',Trebuchet,Arial,sans-serif;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--neutral); color:var(--gray700); font-family:var(--font); line-height:1.5; }
+  .wrap { max-width:920px; margin:0 auto; padding:26px 22px 72px; }
+  .brandbar { display:flex; align-items:center; gap:12px; margin-bottom:30px; }
+  .monogram { font-family:'Trebuchet MS',sans-serif; font-weight:700; font-size:20px; color:var(--g500); letter-spacing:3px; }
+  .brandbar .rule { flex:1; height:1px; background:var(--gray300); }
+  .masthead h1 { font-size:38px; font-weight:700; color:var(--g700); margin:0; letter-spacing:-.5px; }
+  .masthead .sub { color:var(--gray500); font-size:16px; margin:8px 0 0; max-width:560px; }
+  .note { font-size:12px; color:var(--gray500); font-style:italic; margin:14px 0 0; }
+
+  .fields { display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:560px; margin:28px 0 0; }
+  .fields label { font-size:12px; color:var(--gray500); display:block; margin-bottom:6px; font-weight:700; letter-spacing:.3px; }
+  input[type=text], input[type=email] { width:100%; height:44px; padding:0 14px; border:1px solid var(--gray300); border-radius:8px; font-size:15px; font-family:var(--font); background:#fff; }
+  input:focus { outline:none; border-color:var(--g400); box-shadow:0 0 0 3px var(--g200); }
+
+  .toolbar { position:sticky; top:0; z-index:5; background:var(--neutral); display:flex; align-items:center; justify-content:space-between; padding:16px 0 12px; margin-top:30px; border-bottom:2px solid var(--g400); }
+  .toolbar .cnt { font-size:15px; color:var(--gray700); }
+  .toolbar .cnt b { color:var(--g500); font-weight:700; }
+  .toolbar .btns button { margin-left:8px; }
+
+  .eyebrow { font-size:12px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; color:var(--g500); margin:30px 0 14px; }
+
+  /* Hero World News */
+  .hero { display:flex; background:#fff; border:2px solid var(--gray300); border-radius:16px; overflow:hidden; cursor:pointer; transition:all .12s ease; }
+  .hero.on { border-color:var(--g400); box-shadow:0 0 0 4px var(--g200); }
+  .hero .pic { width:300px; flex-shrink:0; background:var(--g200); position:relative; }
+  .hero .pic img { width:100%; height:100%; object-fit:cover; display:block; }
+  .hero .txt { padding:22px 24px; flex:1; }
+  .hero .txt h3 { margin:0; font-size:22px; color:var(--g700); font-weight:700; }
+  .hero .txt p { margin:8px 0 0; color:var(--gray500); font-size:14.5px; }
+  .badge { position:absolute; top:12px; right:12px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.92); border:2px solid var(--gray400); display:flex; align-items:center; justify-content:center; }
+  .on .badge, .card.on .badge { background:var(--g400); border-color:var(--g400); }
+  .on .badge::after, .card.on .badge::after { content:""; width:6px; height:11px; border:solid #fff; border-width:0 2.5px 2.5px 0; transform:rotate(45deg); margin-top:-2px; }
+
+  .stories { background:#fff; border:1px solid var(--gray300); border-radius:14px; padding:18px 20px; margin-top:14px; }
+  .stories .lead { font-size:14px; color:var(--gray700); font-weight:700; margin:0 0 4px; }
+  .stories .hint { font-size:12.5px; color:var(--gray500); margin:0 0 14px; }
+  .chips { display:flex; flex-wrap:wrap; gap:9px; }
+  .chip { cursor:pointer; user-select:none; font-size:13.5px; padding:8px 14px; border-radius:999px; border:1px solid var(--gray300); background:#fff; color:var(--gray700); transition:all .1s ease; }
+  .chip:hover { border-color:var(--g400); }
+  .chip.on { background:var(--g500); border-color:var(--g500); color:#fff; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(236px,1fr)); gap:16px; }
+  .card { cursor:pointer; background:#fff; border:2px solid var(--gray300); border-radius:14px; overflow:hidden; transition:all .12s ease; }
+  .card:hover { border-color:var(--gray400); }
+  .card.on { border-color:var(--g400); box-shadow:0 0 0 4px var(--g200); }
+  .card .pic { position:relative; height:128px; background:var(--g200); }
+  .card .pic img { width:100%; height:100%; object-fit:cover; display:block; }
+  .card .body { padding:13px 15px 15px; }
+  .card .body .t { font-size:15.5px; font-weight:700; color:var(--g700); }
+  .card .body .s { font-size:13px; color:var(--gray500); margin-top:4px; line-height:1.45; }
+  .opt { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; padding-top:12px; border-top:1px solid var(--gray300); font-size:12px; color:var(--gray700); }
+  .switch { width:38px; height:22px; border-radius:999px; background:var(--gray300); position:relative; flex-shrink:0; transition:background .1s; }
+  .switch::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; transition:left .1s; }
+  .switch.on { background:var(--g400); }
+  .switch.on::after { left:18px; }
+
+  .actions { display:flex; justify-content:center; margin-top:38px; }
+  button { font-size:14px; font-family:var(--font); border-radius:8px; padding:9px 15px; cursor:pointer; border:1px solid var(--gray400); background:#fff; color:var(--gray700); }
+  button:hover { border-color:var(--g500); }
+  button.primary { background:var(--g500); border-color:var(--g500); color:#fff; font-weight:700; padding:14px 34px; font-size:16px; }
+  button.primary:hover { background:var(--g700); }
+  button:disabled { opacity:.6; cursor:default; }
+  .msg { max-width:560px; margin:20px auto 0; text-align:center; font-size:14.5px; padding:14px 16px; border-radius:8px; display:none; }
+  .msg.ok { display:block; background:var(--g200); color:var(--g700); border:1px solid var(--g400); }
+  .msg.err { display:block; background:#FBE7E1; color:#8a2b2b; border:1px solid #F48067; }
+  .foot { text-align:center; color:var(--gray500); font-size:11.5px; margin-top:40px; border-top:1px solid var(--gray300); padding-top:18px; }
+</style>
+<script>
+  // Each section image tries images/<slug>.jpg, then .png, then a grey placeholder photo.
+  function imgFallback(img) {
+    var exts = ["jpg","jpeg","png","webp","avif"];
+    var slug = img.getAttribute("data-slug"), w = img.getAttribute("data-w"), h = img.getAttribute("data-h");
+    var step = (+(img.getAttribute("data-step") || 0)) + 1;
+    img.setAttribute("data-step", step);
+    if (step < exts.length) { img.src = "images/" + slug + "." + exts[step]; }
+    else if (step === exts.length) { img.src = "https://picsum.photos/seed/" + slug + "/" + w + "/" + h; }
+    else { img.onerror = null; img.remove(); }
+  }
+  function imgTag(slug, w, h) {
+    return '<img alt="" loading="lazy" src="images/' + slug + '.jpg" data-slug="' + slug + '" data-w="' + w + '" data-h="' + h + '" data-step="0" onerror="imgFallback(this)">';
+  }
+</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead">
+    <h1>The Morning Brief</h1>
+    <p class="sub">Your morning news, made yours. Choose the topics you care about — and the stories you're following — and we'll build you a brief with exactly that, in your inbox by 9 every day.</p>
+  </div>
+
+  <form id="signupForm" novalidate>
+    <div class="fields">
+      <div><label for="name">Name</label><input type="text" id="name" name="name" placeholder="Your first name" required /></div>
+      <div><label for="email">Work Email</label><input type="email" id="email" name="email" placeholder="name.surname@bcg.com" required /></div>
+    </div>
+
+    <div class="toolbar">
+      <span class="cnt"><b id="count">0</b> topics selected</span>
+      <span class="btns">
+        <button type="button" id="allBtn">Select all</button>
+        <button type="button" id="clearBtn">Clear</button>
+      </span>
+    </div>
+
+    <div class="eyebrow">World News</div>
+    <div class="hero" id="heroCard">
+      <div class="pic"><img alt="" loading="lazy" src="images/world-news.jpg" data-slug="world-news" data-w="600" data-h="400" data-step="0" onerror="imgFallback(this)"><div class="badge"></div></div>
+      <div class="txt">
+        <h3>World News</h3>
+        <p>What the world woke up to — the few global stories you'll want in hand before your first meeting, before you dive into the detail below.</p>
+      </div>
+    </div>
+
+    <div class="stories" id="storiesPanel">
+      <p class="lead">Following a story closely?</p>
+      <p class="hint">Tick any you want kept an eye on inside World News — optional.</p>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="eyebrow">Regions</div>
+    <div class="grid" id="grid-regions"></div>
+
+    <div class="eyebrow">Business &amp; Tech</div>
+    <div class="grid" id="grid-biztech"></div>
+
+    <div class="eyebrow">Science &amp; Ideas</div>
+    <div class="grid" id="grid-ideas"></div>
+
+    <div class="eyebrow">Culture &amp; Lifestyle</div>
+    <div class="grid" id="grid-culture"></div>
+
+    <div class="eyebrow">Downtime</div>
+    <div class="grid" id="grid-downtime"></div>
+
+    <input type="hidden" name="sections" id="sectionsField" />
+    <input type="hidden" name="storylines" id="storylinesField" />
+    <input type="hidden" name="marketsTable" id="marketsTableField" />
+
+    <div class="actions"><button type="submit" class="primary" id="submitBtn">Create My Edition</button></div>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <div class="foot">Change your selection anytime by submitting again. Unsubscribe via the link in any brief.<br>Copyright © 2026 by Boston Consulting Group. All rights reserved.</div>
+</div>
+
+<script>
+  // ---- PASTE YOUR FORMSPREE ENDPOINT BETWEEN THE QUOTES BELOW ----
+  const FORMSPREE_ENDPOINT = "https://formspree.io/f/REPLACE_WITH_YOUR_ID";
+  // ---------------------------------------------------------------
+
+  const HERO = ["World News", true];
+  const STORYLINES = ["US–Iran","Russia–Ukraine","Israel–Gaza","US Politics","China & Taiwan","Global Economy","Climate & Energy","The AI Race","Elections Worldwide"];
+
+  const GROUPS = {
+    regions: [
+      ["Middle East","The Iran conflict, the Gulf, and the fault lines redrawing the region.","middle-east",true],
+      ["United Kingdom","Westminster, the economy, and what Britain is actually arguing about today.","united-kingdom",true],
+      ["The Americas","Washington, the White House, and the news moving North and South America.","the-americas",false]
+    ],
+    biztech: [
+      ["Business & Markets","Earnings, deals and dealmakers — plus where stocks, oil and crypto landed.","business-markets",true,"marketsTable"],
+      ["Technology & AI","The products, platforms and AI breakthroughs reshaping how the world works.","technology-ai",true],
+      ["Claude Tips","Get more out of Claude — new features, sharp skills and repos, and prompts that just work.","claude-tips",false]
+    ],
+    ideas: [
+      ["Science & Nature","Discoveries, medicine, the climate, and the occasional dispatch from space.","science-nature",false],
+      ["Opinion","The day's sharpest arguments on politics, society and culture — take them or leave them.","opinion",true],
+      ["Worth Your Time","One thing we loved — an essay, a podcast, a video — wherever we found it.","worth-your-time",false]
+    ],
+    culture: [
+      ["Arts & Culture","Film, music, books, and whatever everyone's talking about this week.","arts-culture",false],
+      ["Living Well","Fitness, food and sleep, minus the fads — what the evidence actually says.","living-well",false],
+      ["Travel","Where to go next and how to do it properly — destinations, openings and ideas.","travel",false],
+      ["Luxury","Watches, cars, fashion and design — the world of beautifully made things.","luxury",false],
+      ["What's On","The finals, tours and premieres worth putting in your calendar.","whats-on",true]
+    ],
+    downtime: [
+      ["Good News","The wins that rarely make the front page — ceasefires, cures, and quiet progress.","good-news",true],
+      ["Daily Puzzle","A quick game to wake your brain up — a different one most mornings.","daily-puzzle",true]
+    ]
+  };
+
+  const secState = {}; secState[HERO[0]] = HERO[1];
+  Object.values(GROUPS).flat().forEach(it => secState[it[0]] = it[3]);
+  const storyState = {}; STORYLINES.forEach(s => storyState[s] = false);
+  const allSecNames = () => [HERO[0], ...Object.values(GROUPS).flat().map(it => it[0])];
+
+  const heroCard = document.getElementById("heroCard");
+  heroCard.onclick = () => { secState[HERO[0]] = !secState[HERO[0]]; sync(); };
+
+  function cardHTML(it) {
+    let extra = '';
+    if (it[4] === 'marketsTable') {
+      extra = '<div class="opt" id="mktToggleRow"><span>Include the index table (S&amp;P 500, Nasdaq, oil, BTC)</span><span class="switch" id="mktSwitch"></span></div>';
+    }
+    return '<div class="pic">'+imgTag(it[2],460,260)+'<div class="badge"></div></div>'+
+           '<div class="body"><div class="t">'+it[0]+'</div><div class="s">'+it[1]+'</div>'+extra+'</div>';
+  }
+  function buildGroup(id, arr) {
+    const g = document.getElementById("grid-"+id); g.innerHTML = "";
+    arr.forEach(it => {
+      const c = document.createElement("div"); c.className = "card"; c.innerHTML = cardHTML(it);
+      c.onclick = () => { secState[it[0]] = !secState[it[0]]; sync(); };
+      g.appendChild(c); it._el = c;
+    });
+  }
+  Object.keys(GROUPS).forEach(k => buildGroup(k, GROUPS[k]));
+
+  let marketsTableState = true;
+  const mktRow = document.getElementById("mktToggleRow");
+  if (mktRow) {
+    document.getElementById("mktSwitch").className = "switch on";
+    mktRow.onclick = (e) => {
+      e.stopPropagation();
+      marketsTableState = !marketsTableState;
+      document.getElementById("mktSwitch").className = "switch" + (marketsTableState ? " on" : "");
+    };
+  }
+
+  const chipsEl = document.getElementById("chips");
+  STORYLINES.forEach(s => {
+    const el = document.createElement("span"); el.className = "chip"; el.textContent = s;
+    el.onclick = () => { storyState[s] = !storyState[s]; if (storyState[s]) secState[HERO[0]] = true; sync(); };
+    chipsEl.appendChild(el); storyState["_el_"+s] = el;
+  });
+
+  function sync() {
+    heroCard.className = "hero" + (secState[HERO[0]] ? " on" : "");
+    Object.values(GROUPS).flat().forEach(it => { it._el.className = "card" + (secState[it[0]] ? " on" : ""); });
+    STORYLINES.forEach(s => { storyState["_el_"+s].className = "chip" + (storyState[s] ? " on" : ""); });
+    document.getElementById("storiesPanel").style.opacity = secState[HERO[0]] ? "1" : ".55";
+    document.getElementById("count").textContent = allSecNames().filter(n => secState[n]).length;
+  }
+  sync();
+
+  document.getElementById("allBtn").onclick = () => { allSecNames().forEach(n => secState[n] = true); sync(); };
+  document.getElementById("clearBtn").onclick = () => { allSecNames().forEach(n => secState[n] = false); sync(); };
+
+  const form = document.getElementById("signupForm");
+  const msg = document.getElementById("msg");
+  const submitBtn = document.getElementById("submitBtn");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.className = "msg";
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const chosen = allSecNames().filter(n => secState[n]);
+    const stories = secState[HERO[0]] ? STORYLINES.filter(s => storyState[s]) : [];
+    if (!name || !email) { msg.className = "msg err"; msg.textContent = "Please enter your name and email."; return; }
+    if (chosen.length === 0) { msg.className = "msg err"; msg.textContent = "Pick at least one topic."; return; }
+    document.getElementById("sectionsField").value = chosen.join(", ");
+    document.getElementById("storylinesField").value = stories.join(", ");
+    document.getElementById("marketsTableField").value = secState["Business & Markets"] ? (marketsTableState ? "Yes" : "No") : "n/a";
+
+    if (FORMSPREE_ENDPOINT.indexOf("REPLACE_WITH_YOUR_ID") !== -1) {
+      msg.className = "msg err"; msg.textContent = "Test mode: add your Formspree endpoint in the code to send for real.";
+      return;
+    }
+    submitBtn.disabled = true; submitBtn.textContent = "Submitting…";
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, { method: "POST", headers: { "Accept": "application/json" }, body: new FormData(form) });
+      if (res.ok) { form.style.display = "none"; msg.className = "msg ok"; msg.textContent = "You're subscribed, " + name + ". Your edition will arrive at 9am Dubai."; }
+      else { msg.className = "msg err"; msg.textContent = "Something went wrong. Please try again."; submitBtn.disabled = false; submitBtn.textContent = "Create My Edition"; }
+    } catch (err) { msg.className = "msg err"; msg.textContent = "Network error — check your connection and try again."; submitBtn.disabled = false; submitBtn.textContent = "Create My Edition"; }
+  });
+</script>
+</body>
+</html>
