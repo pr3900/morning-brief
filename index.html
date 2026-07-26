@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>The Morning Brief — Build Your Edition</title>
+<title>The Morning Brief | Build your edition</title>
 <style>
   :root {
     --g700:#0E3E1B; --g500:#197A56; --g400:#21BF61; --g300:#A8F0B8; --g200:#DCF9E3;
@@ -99,7 +99,7 @@
 <div class="wrap">
   <div class="masthead">
     <h1>The Morning Brief</h1>
-    <p class="sub">Your morning news, made yours. Choose the topics you care about — and the stories you're following — and we'll build you a brief with exactly that, in your inbox by 9 every day.</p>
+    <p class="sub">Pick the sections worth the inbox space. The brief arrives at 9am Dubai every morning with those and nothing else. Seventeen to choose from, and it takes about a minute.</p>
   </div>
 
   <form id="signupForm" novalidate>
@@ -121,13 +121,13 @@
       <div class="pic"><img alt="" loading="lazy" src="images/world-news.jpg" data-slug="world-news" data-w="600" data-h="400" data-step="0" onerror="imgFallback(this)"><div class="badge"></div></div>
       <div class="txt">
         <h3>World News</h3>
-        <p>What the world woke up to — the few global stories you'll want in hand before your first meeting, before you dive into the detail below.</p>
+        <p>The global stories worth knowing before the first meeting of the day.</p>
       </div>
     </div>
 
     <div class="stories" id="storiesPanel">
       <p class="lead">Following a story closely?</p>
-      <p class="hint">Tick any you want kept an eye on inside World News — optional.</p>
+      <p class="hint">Optional. Anything ticked here gets extra attention inside World News.</p>
       <div class="chips" id="chips"></div>
     </div>
 
@@ -155,43 +155,48 @@
 
   <div class="msg" id="msg"></div>
 
-  <div class="foot">Change your selection anytime by submitting again. Unsubscribe via the link in any brief.<br>Copyright © 2026 by Boston Consulting Group. All rights reserved.</div>
+  <div class="foot">Selections can be changed at any time from the link at the foot of every brief, which is also where to unsubscribe.<br>Copyright © 2026 by Boston Consulting Group. All rights reserved.</div>
 </div>
 
 <script>
-  // ---- PASTE YOUR FORMSPREE ENDPOINT BETWEEN THE QUOTES BELOW ----
   const FORMSPREE_ENDPOINT = "https://formspree.io/f/mzdnkypo";
-  // ---------------------------------------------------------------
 
-  const HERO = ["World News", true];
-  const STORYLINES = ["US–Iran","Russia–Ukraine","Israel–Gaza","US Politics","China & Taiwan","Global Economy","Climate & Energy","The AI Race","Elections Worldwide"];
+  // The confirmation echoes back what was typed, so anything user-supplied is escaped first.
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+  }
+
+  // Nothing is pre-selected: the reader chooses everything deliberately, and at least one topic is
+  // required at submit. The fourth value in each row is therefore always false.
+  const HERO = ["World News", false];
+  const STORYLINES = ["US-Iran","Russia-Ukraine","Israel-Gaza","US Politics","China & Taiwan","Global Economy","Climate & Energy","The AI Race","Elections Worldwide"];
 
   const GROUPS = {
     regions: [
-      ["Middle East","The Iran conflict, the Gulf, and the fault lines redrawing the region.","middle-east",true],
-      ["United Kingdom","Westminster, the economy, and what Britain is actually arguing about today.","united-kingdom",true],
+      ["Middle East","The Iran conflict, the Gulf, and the fault lines redrawing the region.","middle-east",false],
+      ["United Kingdom","Westminster, the economy, and what Britain is actually arguing about today.","united-kingdom",false],
       ["The Americas","Washington, the White House, and the news moving North and South America.","the-americas",false]
     ],
     biztech: [
-      ["Business & Markets","Earnings, deals and dealmakers — plus where stocks, oil and crypto landed.","business-markets",true,"marketsTable"],
-      ["Technology & AI","The products, platforms and AI breakthroughs reshaping how the world works.","technology-ai",true],
-      ["Claude Tips","Get more out of Claude — new features, sharp skills and repos, and prompts that just work.","claude-tips",false]
+      ["Business & Markets","Earnings, deals and dealmakers, plus where stocks, oil and crypto closed.","business-markets",false,"marketsTable"],
+      ["Technology & AI","Products, platforms, chips, and what is actually happening at the AI frontier.","technology-ai",false],
+      ["Claude Tips","Three short tips: a prompt worth stealing, something useful on GitHub, and what Anthropic just shipped.","claude-tips",false]
     ],
     ideas: [
       ["Science & Nature","Discoveries, medicine, the climate, and the occasional dispatch from space.","science-nature",false],
-      ["Opinion","The day's sharpest arguments on politics, society and culture — take them or leave them.","opinion",true],
-      ["Worth Your Time","One thing we loved — an essay, a podcast, a video — wherever we found it.","worth-your-time",false]
+      ["Opinion","Commentary people are currently arguing about, deliberately not tied to today's headlines.","opinion",false],
+      ["Worth Your Time","One or two standouts: an essay, a podcast, a video, wherever it turned up.","worth-your-time",false]
     ],
     culture: [
-      ["Arts & Culture","Film, music, books, and whatever everyone's talking about this week.","arts-culture",false],
-      ["Living Well","Fitness, food and sleep, minus the fads — what the evidence actually says.","living-well",false],
-      ["Travel","Where to go next and how to do it properly — destinations, openings and ideas.","travel",false],
-      ["Luxury","Watches, cars, fashion and design — the world of beautifully made things.","luxury",false],
-      ["What's On","The finals, tours and premieres worth putting in your calendar.","whats-on",true]
+      ["Arts & Culture","Film, music, books, and whatever everyone is talking about this week.","arts-culture",false],
+      ["Living Well","Fitness, food and sleep. What the evidence says, rather than what is trending.","living-well",false],
+      ["Travel","Somewhere having a moment, a notable opening, or a smart idea for a trip.","travel",false],
+      ["Luxury","Watches, cars, fashion and design.","luxury",false],
+      ["What's On","The finals, tours and premieres worth putting in the calendar.","whats-on",false]
     ],
     downtime: [
-      ["Good News","The wins that rarely make the front page — ceasefires, cures, and quiet progress.","good-news",true],
-      ["Daily Puzzle","A quick game to wake your brain up — a different one most mornings.","daily-puzzle",true]
+      ["Good News","Ceasefires, new laws, conservation wins, and progress that rarely makes the front page.","good-news",false],
+      ["Daily Puzzle","One free browser game or puzzle, a different one every morning.","daily-puzzle",false]
     ]
   };
 
@@ -221,14 +226,17 @@
   }
   Object.keys(GROUPS).forEach(k => buildGroup(k, GROUPS[k]));
 
+  // The index table is part of Business & Markets, so the toggle only exists while that card is
+  // selected. Previously it could be flipped with the card off, and the value was then silently
+  // discarded as "n/a" at submit, which meant the control lied about what it was doing.
   let marketsTableState = true;
   const mktRow = document.getElementById("mktToggleRow");
   if (mktRow) {
-    document.getElementById("mktSwitch").className = "switch on";
     mktRow.onclick = (e) => {
       e.stopPropagation();
+      if (!secState["Business & Markets"]) { return; }
       marketsTableState = !marketsTableState;
-      document.getElementById("mktSwitch").className = "switch" + (marketsTableState ? " on" : "");
+      sync();
     };
   }
 
@@ -244,8 +252,27 @@
     Object.values(GROUPS).flat().forEach(it => { it._el.className = "card" + (secState[it[0]] ? " on" : ""); });
     STORYLINES.forEach(s => { storyState["_el_"+s].className = "chip" + (storyState[s] ? " on" : ""); });
     document.getElementById("storiesPanel").style.opacity = secState[HERO[0]] ? "1" : ".55";
-    document.getElementById("count").textContent = allSecNames().filter(n => secState[n]).length;
+    const n = allSecNames().filter(x => secState[x]).length;
+    document.getElementById("count").textContent = n;
+    // The index table row appears only with Business & Markets selected.
+    if (mktRow) {
+      const mktOn = !!secState["Business & Markets"];
+      mktRow.style.display = mktOn ? "" : "none";
+      document.getElementById("mktSwitch").className = "switch" + (mktOn && marketsTableState ? " on" : "");
+    }
   }
+
+  // Prefill from the link the reader arrived on. Every brief and the welcome email append
+  // ?name=...&email=... so a returning reader never retypes what is already known.
+  (function prefill() {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const pn = (q.get("name")  || "").trim();
+      const pe = (q.get("email") || "").trim();
+      if (pn) { document.getElementById("name").value  = pn; }
+      if (pe) { document.getElementById("email").value = pe; }
+    } catch (err) { /* prefill is a convenience only; never let it block the form */ }
+  })();
   sync();
 
   document.getElementById("allBtn").onclick = () => { allSecNames().forEach(n => secState[n] = true); sync(); };
@@ -262,22 +289,36 @@
     const email = document.getElementById("email").value.trim();
     const chosen = allSecNames().filter(n => secState[n]);
     const stories = secState[HERO[0]] ? STORYLINES.filter(s => storyState[s]) : [];
-    if (!name || !email) { msg.className = "msg err"; msg.textContent = "Please enter your name and email."; return; }
-    if (chosen.length === 0) { msg.className = "msg err"; msg.textContent = "Pick at least one topic."; return; }
+    const fail = (t) => { msg.className = "msg err"; msg.textContent = t; msg.scrollIntoView({ behavior: "smooth", block: "center" }); };
+
+    if (!name)  { return fail("Enter a name."); }
+    if (!email) { return fail("Enter a BCG email address."); }
+    // The brief is internal, so the address must be a bcg.com one. Checked here rather than left to
+    // the browser, which only validates the shape of an address and not the domain.
+    if (!/^[^@\s]+@([a-z0-9-]+\.)*bcg\.com$/i.test(email)) { return fail("That is not a BCG address. Use a name.surname@bcg.com email."); }
+    if (chosen.length === 0) { return fail("Pick at least one topic. Nothing is selected yet."); }
+
     document.getElementById("sectionsField").value = chosen.join(", ");
     document.getElementById("storylinesField").value = stories.join(", ");
     document.getElementById("marketsTableField").value = secState["Business & Markets"] ? (marketsTableState ? "Yes" : "No") : "n/a";
 
-    if (FORMSPREE_ENDPOINT.indexOf("REPLACE_WITH_YOUR_ID") !== -1) {
-      msg.className = "msg err"; msg.textContent = "Test mode: add your Formspree endpoint in the code to send for real.";
-      return;
-    }
-    submitBtn.disabled = true; submitBtn.textContent = "Submitting…";
+    submitBtn.disabled = true; submitBtn.textContent = "Submitting...";
+    const reset = () => { submitBtn.disabled = false; submitBtn.textContent = "Create My Edition"; };
     try {
       const res = await fetch(FORMSPREE_ENDPOINT, { method: "POST", headers: { "Accept": "application/json" }, body: new FormData(form) });
-      if (res.ok) { form.style.display = "none"; msg.className = "msg ok"; msg.textContent = "You're subscribed, " + name + ". Your edition will arrive at 9am Dubai."; }
-      else { msg.className = "msg err"; msg.textContent = "Something went wrong. Please try again."; submitBtn.disabled = false; submitBtn.textContent = "Create My Edition"; }
-    } catch (err) { msg.className = "msg err"; msg.textContent = "Network error — check your connection and try again."; submitBtn.disabled = false; submitBtn.textContent = "Create My Edition"; }
+      if (res.ok) {
+        form.style.display = "none";
+        msg.className = "msg ok";
+        msg.innerHTML = "Saved, " + esc(name) + ". The first edition arrives at 9am Dubai." +
+                        "<div style='margin-top:10px;font-size:13.5px;text-align:left;'><b>" + chosen.length +
+                        " topics:</b> " + esc(chosen.join(", ")) +
+                        (stories.length ? "<br><b>Following:</b> " + esc(stories.join(", ")) : "") +
+                        "<br><b>Index table:</b> " + esc(document.getElementById("marketsTableField").value) +
+                        "<br><b>Sent to:</b> " + esc(email) + "</div>";
+        msg.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      else { fail("Something went wrong at our end. Try again in a moment."); reset(); }
+    } catch (err) { fail("Network error. Check the connection and try again."); reset(); }
   });
 </script>
 </body>
