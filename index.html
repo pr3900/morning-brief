@@ -26,6 +26,7 @@
   input[type=text], input[type=email] { width:100%; height:44px; padding:0 14px; border:1px solid var(--gray300); border-radius:8px; font-size:15px; font-family:var(--font); background:#fff; }
   input:focus { outline:none; border-color:var(--g400); box-shadow:0 0 0 3px var(--g200); }
 
+  .prefill { display:none; margin:22px 0 0; padding:12px 15px; border-radius:8px; background:var(--g200); border:1px solid var(--g400); color:var(--g700); font-size:13.5px; max-width:560px; }
   .toolbar { position:sticky; top:0; z-index:5; background:var(--neutral); display:flex; align-items:center; justify-content:space-between; padding:16px 0 12px; margin-top:30px; border-bottom:2px solid var(--g400); }
   .toolbar .cnt { font-size:15px; color:var(--gray700); }
   .toolbar .cnt b { color:var(--g500); font-weight:700; }
@@ -107,6 +108,8 @@
       <div><label for="name">Name</label><input type="text" id="name" name="name" placeholder="Your first name" required /></div>
       <div><label for="email">Work Email</label><input type="email" id="email" name="email" placeholder="name.surname@bcg.com" required /></div>
     </div>
+
+    <div class="prefill" id="prefillNote"></div>
 
     <div class="toolbar">
       <span class="cnt"><b id="count">0</b> topics selected</span>
@@ -262,15 +265,41 @@
     }
   }
 
-  // Prefill from the link the reader arrived on. Every brief and the welcome email append
-  // ?name=...&email=... so a returning reader never retypes what is already known.
+  // Prefill from the link the reader arrived on. Briefs append the reader's whole current
+  // selection, so "change your topics" opens on what they already have rather than a blank page.
+  // A first-time visitor has no query string and therefore still starts with nothing selected.
   (function prefill() {
     try {
       const q = new URLSearchParams(window.location.search);
+      // Compare loosely: labels have been written with en dashes in the past ("US–Iran") and are
+      // written with hyphens now, and a stored value must still match the current chip.
+      const norm = s => String(s).replace(/[‐-―]/g, "-").replace(/\s+/g, " ").trim().toLowerCase();
+      const listOf = v => String(v).split(",").map(x => x.trim()).filter(Boolean);
+
       const pn = (q.get("name")  || "").trim();
       const pe = (q.get("email") || "").trim();
       if (pn) { document.getElementById("name").value  = pn; }
       if (pe) { document.getElementById("email").value = pe; }
+
+      let restored = 0;
+      const qs = q.get("sections");
+      if (qs !== null) {
+        const want = listOf(qs).map(norm);
+        allSecNames().forEach(n => { secState[n] = want.includes(norm(n)); if (secState[n]) restored++; });
+      }
+      const ql = q.get("storylines");
+      if (ql !== null) {
+        const want = listOf(ql).map(norm);
+        STORYLINES.forEach(s => { storyState[s] = want.includes(norm(s)); });
+      }
+      const qm = q.get("markets");
+      if (qm !== null) { marketsTableState = /^yes$/i.test(qm.trim()); }
+
+      if (restored > 0) {
+        const b = document.getElementById("prefillNote");
+        b.textContent = "Showing the " + restored + " topics currently selected. Adjust anything and resubmit to update.";
+        b.style.display = "block";
+      }
     } catch (err) { /* prefill is a convenience only; never let it block the form */ }
   })();
   sync();
